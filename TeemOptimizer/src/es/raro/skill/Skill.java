@@ -1,8 +1,11 @@
 package es.raro.skill;
 
+import java.util.HashMap;
+
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import es.raro.champion.Champion;
+import es.raro.champion.ChampionStatType;
 import es.raro.model.Teemodel;
 import es.raro.model.UnmatchingDescription;
 
@@ -10,6 +13,7 @@ import es.raro.model.UnmatchingDescription;
 public abstract class Skill {
 	protected boolean isReady;
 	
+	protected String name;
 	protected Champion champion;
 	protected int level;
 	
@@ -17,7 +21,7 @@ public abstract class Skill {
 	protected String description;
 
 	protected int cost;
-	protected int cooldown;
+	protected double cooldown;
 	
 	// Stats bonus
 	public int health;
@@ -56,34 +60,45 @@ public abstract class Skill {
 	public float cooldownReduction;
 	public float cooldownReductionPerLevel;
 	
+	// Damage stats
 	public float basePhysicalDamageDone;
-	public float bonusPhysicalDamagePerAttackDamage;
+	public HashMap<ChampionStatType,Float> bonusPhysicalDamageDone;
 
 	public float baseMagicDamageDone;
-	public float bonusMagicDamagePerAbilityPower;
+	public HashMap<ChampionStatType,Float> bonusMagicDamageDone;
 	
-	public Skill(Champion champion, int level) throws UnmatchingDescription {
+	public Skill(String name, Champion champion, int level) throws UnmatchingDescription {
+		this.name = name;
 		this.champion = champion;
 		this.level = level;
 		
-		cost = defineCost(level);
+		cost = defineManaCost(level);
 		range = defineRange(level);
 		cooldown = defineCooldown(level);
-		description = defineDescription();
-		parseDescription(level, description);
 		
 		isReady = true;
+		
+		basePhysicalDamageDone = defineBasePhysicalDamageDone(); 
+		bonusPhysicalDamageDone = defineBonusPhysicalDamageDone();
+		baseMagicDamageDone = defineBaseMagicDamageDone();
+		bonusMagicDamageDone = defineMagicPhysicalDamageDone();
 	}
 
-	protected abstract int defineCost(int level);
+	protected abstract float defineBasePhysicalDamageDone();
+
+	protected abstract HashMap<ChampionStatType, Float> defineBonusPhysicalDamageDone();
+
+	protected abstract float defineBaseMagicDamageDone();
+
+	protected abstract HashMap<ChampionStatType, Float> defineMagicPhysicalDamageDone();
+
+	protected abstract int defineManaCost(int level);
 
 	protected abstract int defineRange(int level);
 
-	protected abstract int defineCooldown(int level);
+	protected abstract double defineCooldown(int level);
 
 	protected abstract String defineDescription();
-
-	protected abstract void parseDescription(int level, String description) throws UnmatchingDescription;
 
 	public void use(Teemodel model, Champion target) {
 		// Determine skill's damage
@@ -113,23 +128,35 @@ public abstract class Skill {
 		});
 	}
 
-	private boolean doesMagicDamage() {
-		if(basePhysicalDamageDone>0 || bonusPhysicalDamagePerAttackDamage>0)
-			return true;
-		else
-			return false;
-	}
-
 	private boolean doesPhysicalDamage() {
-		if(baseMagicDamageDone>0 || bonusMagicDamagePerAbilityPower>0)
+		if(basePhysicalDamageDone>0 || !bonusPhysicalDamageDone.isEmpty())
 			return true;
 		else
 			return false;
 	}
 
+	private boolean doesMagicDamage() {
+		if(baseMagicDamageDone>0 || !bonusMagicDamageDone.isEmpty())
+			return true;
+		else
+			return false;
+	}
+	
 	public boolean isReady() {
 		return isReady;
 	}
 
 	public abstract boolean canCriticallyHit();
+
+	public abstract boolean applyOnHitEffects();
+
+	public float getPhysicalDamageDone() {
+		// TODO
+		throw new IllegalAccessError();
+	}
+
+	public float getMagicDamageDone() {
+		// TODO
+		throw new IllegalAccessError();
+	}
 }

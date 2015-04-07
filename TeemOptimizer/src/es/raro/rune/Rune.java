@@ -38,8 +38,8 @@ public class Rune {
 	public float lifeSteal;
 	public float spellVamp;
 	public float revival;
-	public float goldGain;
-	public float experienceGain;
+	public float goldEarn;
+	public float experienceEarn;
 	public float energy;
 	public float energyPerLevel;
 	public float energyRegen;
@@ -94,8 +94,8 @@ public class Rune {
 		lifeSteal = 0;
 		spellVamp = 0;
 		revival = 0;
-		goldGain = 0;
-		experienceGain = 0;
+		goldEarn = 0;
+		experienceEarn = 0;
 		energy = 0;
 		energyPerLevel = 0;
 		energyRegen = 0;
@@ -145,8 +145,8 @@ public class Rune {
 		this.lifeSteal = lifeSteal;
 		this.spellVamp = spellVamp;
 		this.revival = revival;
-		this.goldGain = gold;
-		this.experienceGain = experience;
+		this.goldEarn = gold;
+		this.experienceEarn = experience;
 		this.energy = energy;
 		this.energyPerLevel = energyPerLevel;
 		this.energyRegen = energyRegen;

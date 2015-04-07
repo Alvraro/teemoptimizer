@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
+import com.robrua.orianna.api.core.RiotAPI;
+import com.robrua.orianna.type.core.common.Region;
+
 import es.raro.champion.Champion;
 import es.raro.item.Item;
 import es.raro.mastery.Mastery;
@@ -22,6 +25,8 @@ public class Main {
 		Properties properties = new Properties();
 		properties.load(new FileReader("config.properties"));
 		
+		initializeRiotAPI(properties.getProperty("key"), properties.getProperty("region"));
+		
 		int seed = Integer.parseInt(properties.getProperty("seed"));
 		
 		// Attacker config
@@ -31,10 +36,7 @@ public class Main {
 		ArrayList<Rune> runes = new ArrayList<Rune>();
 		ArrayList<Item> items = new ArrayList<Item>();
 		
-		Class[] championConstructorTypes = new Class[]{Integer.class, ArrayList.class, ArrayList.class, ArrayList.class};
-		
-		String attackerClassName = properties.getProperty("attacker.champion");
-		Class<Champion> attackerClass = (Class<Champion>) Class.forName(Champion.class.getPackage().getName()+"."+attackerClassName);
+		String attackerName = properties.getProperty("attacker.champion");
 		Champion attacker = attackerClass.getConstructor(championConstructorTypes).newInstance(new Object[]{attackerLevel, masteries, runes, items});
 
 		Class[] skillConstructorTypes = new Class[]{Champion.class, Integer.class};
@@ -55,7 +57,14 @@ public class Main {
 		Champion defender = defenderClass.newInstance();
 		
 		// TODO
+		throw new IllegalAccessError();
 		//Teemodel model = new Teemodel(seed, attacker, defender);
 		//model.start();
+	}
+
+	private static void initializeRiotAPI(String key, String region) {
+        RiotAPI.setMirror(Region.valueOf(region));
+        RiotAPI.setRegion(Region.valueOf(region));
+        RiotAPI.setAPIKey(key);
 	}
 }

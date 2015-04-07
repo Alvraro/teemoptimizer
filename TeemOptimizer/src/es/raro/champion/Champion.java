@@ -12,6 +12,9 @@ import es.raro.rune.Rune;
 import es.raro.skill.Skill;
 
 public abstract class Champion implements Steppable {
+	private static final float MAX_ATTACK_SPEED = 2.5f;
+	private static final float MAX_COOLDOWN_REDUCTION = 40;
+
 	protected ArrayList<Skill> skills;
 	
 	protected ArrayList<Mastery> masteries;
@@ -32,12 +35,17 @@ public abstract class Champion implements Steppable {
 		
 	protected int level;
 	
+	protected String name;
+	
+	// Attributes
 	protected float health;
 	protected float healthRegen;
 	protected float mana;
 	protected float manaRegen;
 	protected float damage;
+	/** Attacks per second */
 	protected float attackSpeed;
+	protected float bonusAttackSpeed;
 	protected float armor;
 	protected float armorGain;
 	protected float magicResist;
@@ -51,18 +59,16 @@ public abstract class Champion implements Steppable {
 	protected float flatMagicPenetration;
 	protected float criticalChance;
 	protected float criticalBonusDamage;
-	
 	protected float abilityPower;
 	protected float magicPenetration;
 	protected float lifeSteal;
 	protected float spellVamp;
-	protected float revival;
-	protected float goldGain;
-	protected float experienceGain;
 	protected float energy;
 	protected float energyRegen;
+	/** % 1-100 by which skill cooldown is reduced */
 	protected float cooldownReduction;
 	
+	// Base attributes/gains
 	protected float baseHealth;
 	protected float healthGain;
 	protected float baseHealthRegen;
@@ -88,37 +94,33 @@ public abstract class Champion implements Steppable {
 	
 	protected float remainingHealth;
 	protected float remainingMana;
-	
-	public Champion(int level, ArrayList<Mastery> masteries,
-			ArrayList<Rune> runes, ArrayList<Item> items, 
-			float baseHealth, float healthGain, float baseHealthRegen, float healthRegenGain, 
-			float baseMana,	float manaGain, float baseManaRegen, float manaRegenGain, 
-			float baseDamage, float damageGain, float baseAttackSpeed, float attackSpeedGain, 
-			float baseArmor, float armorGain, float baseMagicResist, float magicResistGain, 
-			float baseMovementSpeed, float baseRange) {
+
+	public Champion(String name, int level, ArrayList<Mastery> masteries, ArrayList<Rune> runes, ArrayList<Item> items) {
+		this.name = name;
 		this.level = level;
 		this.masteries = masteries;
 		this.runes = runes;
 		this.items = items;
-
-		this.baseHealth = baseHealth;
-		this.healthGain = healthGain;
-		this.baseHealthRegen = baseHealthRegen;
-		this.healthRegenGain = healthRegenGain;
-		this.baseMana = baseMana;
-		this.manaGain = manaGain;
-		this.baseManaRegen = baseManaRegen;
-		this.manaRegenGain = manaRegenGain;
-		this.baseDamage = baseDamage;
-		this.damageGain = damageGain;
-		this.baseAttackSpeed = baseAttackSpeed;
-		this.attackSpeedGain = attackSpeedGain;
-		this.baseArmor = baseArmor;
-		this.armorGain = armorGain;
-		this.baseMagicResist = baseMagicResist;
-		this.magicResistGain = magicResistGain;
-		this.baseMovementSpeed = baseMovementSpeed;
-		this.baseRange = baseRange;
+		
+		this.baseHealth = defineBaseHealth();
+		this.healthGain = defineHealthGain();
+		this.baseHealthRegen = defineBaseHealthRegen();
+		this.healthRegenGain = defineHealthRegenGain();
+		this.baseMana = defineBaseMana();
+		this.manaGain = defineManaGain();
+		this.baseManaRegen = defineBaseManaRegen();
+		this.manaRegenGain = defineManaRegenGain();
+		this.baseDamage = defineBaseDamage();
+		this.damageGain = defineDamageGain();
+		this.baseAttackSpeed = defineBaseAttackSpeed();
+		this.attackSpeedGain = defineAttackSpeedGain();
+		this.bonusAttackSpeed = 0;
+		this.baseArmor = defineBaseArmor();
+		this.armorGain = defineArmorGain();
+		this.baseMagicResist = defineBaseMagicResist();
+		this.magicResistGain = defineMagicResistGain();
+		this.baseMovementSpeed = defineBaseMovementSpeed();
+		this.baseRange = defineBaseRange();
 		this.baseArmorReduction = 0;
 		this.basePercentageArmorPenetration = 0;
 		this.baseFlatArmorPenetration = 0;
@@ -127,6 +129,25 @@ public abstract class Champion implements Steppable {
 		
 		restart();
 	}
+
+	protected abstract float defineBaseHealth();
+	protected abstract float defineHealthGain();
+	protected abstract float defineBaseHealthRegen();
+	protected abstract float defineHealthRegenGain();
+	protected abstract float defineBaseMana();
+	protected abstract float defineManaGain();
+	protected abstract float defineBaseManaRegen();
+	protected abstract float defineManaRegenGain();
+	protected abstract float defineBaseDamage();
+	protected abstract float defineDamageGain();
+	protected abstract float defineBaseAttackSpeed();
+	protected abstract float defineAttackSpeedGain();
+	protected abstract float defineBaseArmor();
+	protected abstract float defineArmorGain();
+	protected abstract float defineBaseMagicResist();
+	protected abstract float defineMagicResistGain();
+	protected abstract float defineBaseMovementSpeed();
+	protected abstract float defineBaseRange();
 	
 	public void restart(){
 		lastTarget = null;
@@ -135,14 +156,14 @@ public abstract class Champion implements Steppable {
 		attackReady = true;
 		skillsReady = true;
 		
-		health = baseHealth + (level-1)*healthGain;
-		healthRegen = increaseStat(baseHealthRegen, healthRegenGain, level);
-		mana = increaseStat(baseMana, manaGain, level);
-		manaRegen = increaseStat(baseManaRegen, manaRegenGain, level);
-		damage = increaseStat(baseDamage, damageGain, level);
-		attackSpeed = increaseStat(baseAttackSpeed, attackSpeedGain, level);
-		armor = increaseStat(baseArmor, armorGain, level);
-		magicResist = increaseStat(baseMagicResist, magicResistGain, level);
+		health = baseHealth + increaseStat(healthGain, level);
+		healthRegen = baseHealthRegen + increaseStat(healthRegenGain, level);
+		mana = baseMana + increaseStat(manaGain, level);
+		manaRegen = baseManaRegen + increaseStat(manaRegenGain, level);
+		damage = baseDamage + increaseStat(damageGain, level);
+		bonusAttackSpeed = increaseStat(attackSpeedGain, level);
+		armor = baseArmor + increaseStat(armorGain, level);
+		magicResist = baseMagicResist + increaseStat(magicResistGain, level);
 		movementSpeed = baseMovementSpeed;
 		range = baseRange;
 		armorReduction = baseArmorReduction;
@@ -150,20 +171,29 @@ public abstract class Champion implements Steppable {
 		flatArmorPenetration = baseFlatArmorPenetration;
 		criticalChance = baseCriticalChance;
 		criticalBonusDamage = baseCriticalBonusDamage;
-		
+
 		applyMasteriesBonuses();
 		applyRunesBonuses();
 		applyItemsBonuses();
+
+		// Get attackSpeed final value
+		attackSpeed = baseAttackSpeed * (100f + bonusAttackSpeed) / 100f; 
+		
+		if(attackSpeed > MAX_ATTACK_SPEED)
+			attackSpeed = MAX_ATTACK_SPEED;
+
+		if(cooldownReduction > MAX_COOLDOWN_REDUCTION)
+			cooldownReduction = MAX_COOLDOWN_REDUCTION;
 		
 		remainingHealth = health;
 		remainingMana = mana;
 	}
 	
-	private float increaseStat(float baseValue, float gain, int level){
-		if(gain>0)
-			return baseValue + gain * (7f * level * level / 400f + 267f *level / 400 - 137f / 200f);
+	private float increaseStat(float gain, int level){
+		if(gain>0 && level>0)
+			return gain * (7f * level * level / 400f + 267f *level / 400 - 137f / 200f);
 		else
-			return baseValue;
+			return 0;
 	}
 	
 	private void applyMasteriesBonuses() {
@@ -173,7 +203,7 @@ public abstract class Champion implements Steppable {
 			mana+=mastery.getMana();
 			manaRegen+=mastery.getManaRegen();
 			damage+=mastery.getDamage();
-			attackSpeed+=mastery.getAttackSpeed();
+			bonusAttackSpeed+=mastery.getAttackSpeed();
 			armor+=mastery.getArmor();
 			magicResist+=mastery.getMagicResist();
 			movementSpeed+=mastery.getMovementSpeed();
@@ -199,7 +229,7 @@ public abstract class Champion implements Steppable {
 			manaRegen+=level*rune.manaRegenPerLevel;
 			damage+=rune.damage;
 			damage+=level*rune.damagePerLevel;
-			attackSpeed+=rune.attackSpeed;
+			bonusAttackSpeed+=rune.attackSpeed;
 			armor+=rune.armor;
 			armor+=level*rune.armorPerLevel;
 			magicResist+=rune.magicResist;
@@ -214,9 +244,6 @@ public abstract class Champion implements Steppable {
 			magicPenetration+=rune.magicPenetration;
 			lifeSteal+=rune.lifeSteal;
 			spellVamp+=rune.spellVamp;
-			revival+=rune.revival;
-			goldGain+=rune.goldGain;
-			experienceGain+=rune.experienceGain;
 			energy+=rune.energy;
 			energy+=level*rune.energyPerLevel;
 			energyRegen+=rune.energyRegen;
@@ -239,7 +266,7 @@ public abstract class Champion implements Steppable {
 			manaRegen+=level*item.manaRegenPerLevel;
 			damage+=item.damage;
 			damage+=level*item.damagePerLevel;
-			attackSpeed+=item.attackSpeed;
+			bonusAttackSpeed+=item.attackSpeed;
 			armor+=item.armor;
 			armor+=level*item.armorPerLevel;
 			magicResist+=item.magicResist;
@@ -254,9 +281,6 @@ public abstract class Champion implements Steppable {
 			magicPenetration+=item.magicPenetration;
 			lifeSteal+=item.lifeSteal;
 			spellVamp+=item.spellVamp;
-			revival+=item.revival;
-			goldGain+=item.goldGain;
-			experienceGain+=item.experienceGain;
 			energy+=item.energy;
 			energy+=level*item.energyPerLevel;
 			energyRegen+=item.energyRegen;
@@ -354,7 +378,7 @@ public abstract class Champion implements Steppable {
 			}
 		});
 	}
-	
+
 	public ArrayList<Skill> getSkills() {
 		return skills;
 	}
@@ -371,72 +395,40 @@ public abstract class Champion implements Steppable {
 		return items;
 	}
 
-	public Champion getLastTarget() {
-		return lastTarget;
+	public boolean isAttackReady() {
+		return attackReady;
 	}
 
 	public float getHealth() {
 		return health;
 	}
 
-	public float getHealthGain() {
-		return healthGain;
-	}
-
 	public float getHealthRegen() {
 		return healthRegen;
-	}
-
-	public float getHealthRegenGain() {
-		return healthRegenGain;
 	}
 
 	public float getMana() {
 		return mana;
 	}
 
-	public float getManaGain() {
-		return manaGain;
-	}
-
 	public float getManaRegen() {
 		return manaRegen;
-	}
-
-	public float getManaRegenGain() {
-		return manaRegenGain;
 	}
 
 	public float getDamage() {
 		return damage;
 	}
 
-	public float getDamageGain() {
-		return damageGain;
-	}
-
 	public float getAttackSpeed() {
 		return attackSpeed;
-	}
-
-	public float getAttackSpeedGain() {
-		return attackSpeedGain;
 	}
 
 	public float getArmor() {
 		return armor;
 	}
 
-	public float getArmorGain() {
-		return armorGain;
-	}
-
 	public float getMagicResist() {
 		return magicResist;
-	}
-
-	public float getMagicResistGain() {
-		return magicResistGain;
 	}
 
 	public float getMovementSpeed() {
@@ -447,14 +439,10 @@ public abstract class Champion implements Steppable {
 		return range;
 	}
 
-	public int getLevel() {
-		return level;
-	}
-
 	public float getArmorReduction() {
 		return armorReduction;
 	}
-	
+
 	public float getPercentageArmorPenetration() {
 		return percentageArmorPenetration;
 	}
@@ -466,7 +454,7 @@ public abstract class Champion implements Steppable {
 	public float getMagicResistReduction() {
 		return magicResistReduction;
 	}
-	
+
 	public float getPercentageMagicPenetration() {
 		return percentageMagicPenetration;
 	}
@@ -474,7 +462,7 @@ public abstract class Champion implements Steppable {
 	public float getFlatMagicPenetration() {
 		return flatMagicPenetration;
 	}
-	
+
 	public float getCriticalChance() {
 		return criticalChance;
 	}
@@ -483,16 +471,48 @@ public abstract class Champion implements Steppable {
 		return criticalBonusDamage;
 	}
 
-	public float getCooldownReduction() {
-		return cooldownReduction;
-	}
-
 	public float getAbilityPower() {
 		return abilityPower;
 	}
 
-	public void setSkills(ArrayList<Skill> skills) {
-		this.skills = skills;
+	public float getMagicPenetration() {
+		return magicPenetration;
 	}
 
+	public float getLifeSteal() {
+		return lifeSteal;
+	}
+
+	public float getSpellVamp() {
+		return spellVamp;
+	}
+
+	public float getEnergy() {
+		return energy;
+	}
+
+	public float getEnergyRegen() {
+		return energyRegen;
+	}
+
+	public float getCooldownReduction() {
+		return cooldownReduction;
+	}
+
+	public float getRemainingHealth() {
+		return remainingHealth;
+	}
+
+	public float getRemainingMana() {
+		return remainingMana;
+	}
+
+	public String getName(){
+		return name;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

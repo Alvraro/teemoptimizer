@@ -70,8 +70,7 @@ public class Teemodel extends SimState {
 		// Calculate physical damage of the auto-attack or skill
 		float physicalDamageDone = 0;
 		if(skill!=null){
-			physicalDamageDone = skill.basePhysicalDamageDone;
-			physicalDamageDone += attacker.getDamage() * skill.bonusPhysicalDamagePerAttackDamage / 100f;
+			physicalDamageDone = skill.getPhysicalDamageDone();
 		}
 		else{
 			physicalDamageDone = attacker.getDamage();
@@ -110,13 +109,7 @@ public class Teemodel extends SimState {
 			damageReduction = 2 - 100 / (100 - targetResistance);
 		
 		float magicDamageDone = 0;
-		if(skill!=null){
-			magicDamageDone = skill.baseMagicDamageDone;
-			magicDamageDone += attacker.getAbilityPower() * skill.bonusMagicDamagePerAbilityPower / 100f;
-		}
-		else{
-			magicDamageDone = attacker.getAbilityPower();
-		}
+		magicDamageDone = skill.getMagicDamageDone();
 		
 		// Calculate final damage
 		float finalDamage = Math.round(magicDamageDone * damageReduction);

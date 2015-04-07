@@ -1,15 +1,18 @@
 package es.raro.item;
 
-public class Item {
+public abstract class Item {
+	protected String name;
+	
 	public int cost;
 	
-	public int health;
-	public int healthPerLevel;
-	public int healthPercentage;
+	// Stats bonus
+	public float health;
+	public float healthPerLevel;
+	public float healthPercentage;
 	public float healthRegen;
 	public float healthRegenPerLevel;
-	public int mana;
-	public int manaPerLevel;
+	public float mana;
+	public float manaPerLevel;
 	public float manaRegen;
 	public float manaRegenPerLevel;
 	public float damage;
@@ -29,9 +32,6 @@ public class Item {
 	public float magicPenetration;
 	public float lifeSteal;
 	public float spellVamp;
-	public float revival;
-	public float goldGain;
-	public float experienceGain;
 	public float energy;
 	public float energyPerLevel;
 	public float energyRegen;
@@ -39,92 +39,107 @@ public class Item {
 	public float cooldownReduction;
 	public float cooldownReductionPerLevel;
 
-	public Item(){
-		health = 0;
-		healthPerLevel = 0;
-		healthPercentage = 0;
-		healthRegen = 0;
-		healthRegenPerLevel = 0;
-		mana = 0;
-		manaPerLevel = 0;
-		manaRegen = 0;
-		manaRegenPerLevel = 0;
-		damage = 0;
-		damagePerLevel = 0;
-		attackSpeed = 0;
-		armor = 0;
-		armorPerLevel = 0;
-		magicResist = 0;
-		magicResistPerLevel = 0;
-		movementSpeed = 0;
-		percentageArmorPenetration = 0;
-		flatArmorPenetration = 0;
-		criticalChance = 0;
-		criticalBonusDamage = 0;
-		abilityPower = 0;
-		abilityPowerPerLevel = 0;
-		magicPenetration = 0;
-		lifeSteal = 0;
-		spellVamp = 0;
-		revival = 0;
-		goldGain = 0;
-		experienceGain = 0;
-		energy = 0;
-		energyPerLevel = 0;
-		energyRegen = 0;
-		energyRegenPerLevel = 0;
-		cooldownReduction = 0;
-		cooldownReductionPerLevel = 0;	
+	public Item(String name){
+		this.name = name;
+		
+		cost = defineCost();
+		health = defineHealth();
+		healthPerLevel = defineHealthPerLevel();
+		healthPercentage = defineHealthPercentage();
+		healthRegen = defineHealthRegen();
+		healthRegenPerLevel = defineHealthRegenPerLevel();
+		mana = defineMana();
+		manaPerLevel = defineManaPerLevel();
+		manaRegen = defineManaRegen();
+		manaRegenPerLevel = defineManaRegenPerLevel();
+		damage = defineDamage();
+		damagePerLevel = defineDamagePerLevel();
+		attackSpeed = defineAttackSpeed();
+		armor = defineArmor();
+		armorPerLevel = defineArmorPerLevel();
+		magicResist = defineMagicResist();
+		magicResistPerLevel = defineMagicResistPerLevel();
+		movementSpeed = defineMovementSpeed();
+		percentageArmorPenetration = definePercentageArmorPenetration();
+		flatArmorPenetration = defineFlatArmorPenetration();
+		criticalChance = defineCriticalChance();
+		criticalBonusDamage = defineCriticalBonusDamage();
+		abilityPower = defineAbilityPower();
+		abilityPowerPerLevel = defineAbilityPowerPerLevel();
+		magicPenetration = defineMagicPenetration();
+		lifeSteal = defineLifeSteal();
+		spellVamp = defineSpellVamp();
+		energy = defineEnergy();
+		energyPerLevel = defineEnergyPerLevel();
+		energyRegen = defineEnergyRegen();
+		energyRegenPerLevel = defineEnergyRegenPerLevel();
+		cooldownReduction = defineCooldownReduction();
+		cooldownReductionPerLevel = defineCooldownReductionPerLevel();
 	}
 
-	public Item(int health, int healthPerLevel, int healthPercentage,
-			float healthRegen, float healthRegenPerLevel, int mana,
-			int manaPerLevel, float manaRegen, float manaRegenPerLevel,
-			float damage, float damagePerLevel, float attackSpeed, float armor,
-			float armorPerLevel, float magicResist, float magicResistPerLevel,
-			float movementSpeed, float percentageArmorPenetration,
-			float flatArmorPenetration, float criticalChance,
-			float criticalBonusDamage, float abilityPower,
-			float abilityPowerPerLevel, float magicPenetration,
-			float lifeSteal, float spellVamp, float revival, float gold,
-			float experience, float energy, float energyPerLevel,
-			float energyRegen, float energyRegenPerLevel,
-			float cooldownReduction, float cooldownReductionPerLevel) {
-		super();
-		this.health = health;
-		this.healthPerLevel = healthPerLevel;
-		this.healthPercentage = healthPercentage;
-		this.healthRegen = healthRegen;
-		this.healthRegenPerLevel = healthRegenPerLevel;
-		this.mana = mana;
-		this.manaPerLevel = manaPerLevel;
-		this.manaRegen = manaRegen;
-		this.manaRegenPerLevel = manaRegenPerLevel;
-		this.damage = damage;
-		this.damagePerLevel = damagePerLevel;
-		this.attackSpeed = attackSpeed;
-		this.armor = armor;
-		this.armorPerLevel = armorPerLevel;
-		this.magicResist = magicResist;
-		this.magicResistPerLevel = magicResistPerLevel;
-		this.movementSpeed = movementSpeed;
-		this.percentageArmorPenetration = percentageArmorPenetration;
-		this.flatArmorPenetration = flatArmorPenetration;
-		this.criticalChance = criticalChance;
-		this.criticalBonusDamage = criticalBonusDamage;
-		this.abilityPower = abilityPower;
-		this.abilityPowerPerLevel = abilityPowerPerLevel;
-		this.magicPenetration = magicPenetration;
-		this.lifeSteal = lifeSteal;
-		this.spellVamp = spellVamp;
-		this.revival = revival;
-		this.goldGain = gold;
-		this.experienceGain = experience;
-		this.energy = energy;
-		this.energyPerLevel = energyPerLevel;
-		this.energyRegen = energyRegen;
-		this.energyRegenPerLevel = energyRegenPerLevel;
-		this.cooldownReduction = cooldownReduction;
-		this.cooldownReductionPerLevel = cooldownReductionPerLevel;
-	}
+	protected abstract int defineCost();
+
+	protected abstract float defineHealth();
+	
+	protected abstract float defineHealthPerLevel();
+	
+	protected abstract float defineHealthPercentage();
+	
+	protected abstract float defineHealthRegen();
+	
+	protected abstract float defineHealthRegenPerLevel();
+	
+	protected abstract float defineMana();
+	
+	protected abstract float defineManaPerLevel();
+	
+	protected abstract float defineManaRegen();
+	
+	protected abstract float defineManaRegenPerLevel();
+	
+	protected abstract float defineDamage();
+	
+	protected abstract float defineDamagePerLevel();
+	
+	protected abstract float defineAttackSpeed();
+	
+	protected abstract float defineArmor();
+	
+	protected abstract float defineArmorPerLevel();
+	
+	protected abstract float defineMagicResist();
+	
+	protected abstract float defineMagicResistPerLevel();
+	
+	protected abstract float defineMovementSpeed();
+	
+	protected abstract float definePercentageArmorPenetration();
+	
+	protected abstract float defineFlatArmorPenetration();
+	
+	protected abstract float defineCriticalChance();
+	
+	protected abstract float defineCriticalBonusDamage();
+	
+	protected abstract float defineAbilityPower();
+	
+	protected abstract float defineAbilityPowerPerLevel();
+	
+	protected abstract float defineMagicPenetration();
+	
+	protected abstract float defineLifeSteal();
+	
+	protected abstract float defineSpellVamp();
+	
+	protected abstract float defineEnergy();
+	
+	protected abstract float defineEnergyPerLevel();
+	
+	protected abstract float defineEnergyRegen();
+	
+	protected abstract float defineEnergyRegenPerLevel();
+	
+	protected abstract float defineCooldownReduction();
+	
+	protected abstract float defineCooldownReductionPerLevel();
 }
