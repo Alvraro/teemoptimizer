@@ -55,7 +55,7 @@ public class Teemodel extends SimState {
 		targetArmor -= attacker.getArmorReduction();
 		
 		if(targetArmor>0)
-			targetArmor *= (100 - attacker.getPercentageArmorPenetration());
+			targetArmor *= (1 - attacker.getPercentageArmorPenetration());
 		
 		if(targetArmor>0)
 			targetArmor -= attacker.getFlatArmorPenetration();
@@ -79,7 +79,7 @@ public class Teemodel extends SimState {
 		// Calculate damage multiplier factor
 		float damageMultiplier = 1;  
 		if(skill==null || skill.canCriticallyHit())
-			damageMultiplier = (100 + (attacker.getCriticalChance() * (100 + attacker.getCriticalBonusDamage()))) / 100f;
+			damageMultiplier = 1 + (attacker.getCriticalChance() * (1 + attacker.getCriticalBonusDamage()));
 		else
 			damageMultiplier = 1;
 
@@ -96,7 +96,7 @@ public class Teemodel extends SimState {
 		targetResistance -= attacker.getMagicResistReduction();
 		
 		if(targetResistance>0)
-			targetResistance *= (100 - attacker.getPercentageMagicPenetration());
+			targetResistance *= (1 - attacker.getPercentageMagicPenetration());
 		
 		if(targetResistance>0)
 			targetResistance -= attacker.getFlatMagicPenetration();

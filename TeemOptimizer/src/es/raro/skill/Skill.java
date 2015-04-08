@@ -1,6 +1,7 @@
 package es.raro.skill;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -35,15 +36,20 @@ public abstract class Skill {
 	public float manaRegenPerLevel;
 	public float damage;
 	public float damagePerLevel;
+	/** Attacks per second */
 	public float attackSpeed;
+	/** 0-1 rate of armor ignored */
 	public float armor;
 	public float armorPerLevel;
+	/** 0-1 rate of magic resistance ignored */
 	public float magicResist;
 	public float magicResistPerLevel;
 	public float movementSpeed;
 	public float percentageArmorPenetration;
 	public float flatArmorPenetration;
+	/** 0-1 probability of getting a critical hit */
 	public float criticalChance;
+	/** 0-1 probability of increased damage on critical hit (over the basic 1) */
 	public float criticalBonusDamage;
 	public float abilityPower;
 	public float abilityPowerPerLevel;
@@ -57,7 +63,9 @@ public abstract class Skill {
 	public float energyPerLevel;
 	public float energyRegen;
 	public float energyRegenPerLevel;
+	/** 0-1 rate by which skill cooldown is reduced */
 	public float cooldownReduction;
+	/** 0-1 rate by which skill cooldown is reduced per champion's level */
 	public float cooldownReductionPerLevel;
 	
 	// Damage stats
@@ -119,7 +127,7 @@ public abstract class Skill {
 		isReady = false;
 				
 		// Schedule event to reactivate skill after the cooldown
-		cooldown *= (100 - champion.getCooldownReduction());
+		cooldown *= (1 - champion.getCooldownReduction());
 		model.schedule.scheduleOnce(cooldown, new Steppable() {
 			@Override
 			public void step(SimState state) {
@@ -151,12 +159,28 @@ public abstract class Skill {
 	public abstract boolean applyOnHitEffects();
 
 	public float getPhysicalDamageDone() {
-		// TODO
-		throw new IllegalAccessError();
+		float damageDone = 0;
+		
+		for(Entry<ChampionStatType, Float> d : bonusPhysicalDamageDone.entrySet()){
+			ChampionStatType statType = d.getKey();
+			Float coef = d.getValue();
+			
+			damageDone += coef * champion.getStat(statType);
+		}
+		
+		return damageDone;
 	}
 
 	public float getMagicDamageDone() {
-		// TODO
-		throw new IllegalAccessError();
+		float damageDone = 0;
+		
+		for(Entry<ChampionStatType, Float> d : bonusMagicDamageDone.entrySet()){
+			ChampionStatType statType = d.getKey();
+			Float coef = d.getValue();
+			
+			damageDone += coef * champion.getStat(statType);
+		}
+		
+		return damageDone;
 	}
 }

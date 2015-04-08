@@ -13,7 +13,7 @@ import es.raro.skill.Skill;
 
 public abstract class Champion implements Steppable {
 	private static final float MAX_ATTACK_SPEED = 2.5f;
-	private static final float MAX_COOLDOWN_REDUCTION = 40;
+	private static final float MAX_COOLDOWN_REDUCTION = 0.4f;
 
 	protected ArrayList<Skill> skills;
 	
@@ -51,13 +51,17 @@ public abstract class Champion implements Steppable {
 	protected float magicResist;
 	protected float movementSpeed;
 	protected float range;
+	/** 0-1 rate of armor ignored */
 	protected float armorReduction;
 	protected float percentageArmorPenetration;
 	protected float flatArmorPenetration;
 	protected float magicResistReduction;
+	/** 0-1 rate of magic resistance ignored */
 	protected float percentageMagicPenetration;
 	protected float flatMagicPenetration;
+	/** 0-1 probability of getting a critical hit */
 	protected float criticalChance;
+	/** 0-1 probability of increased damage on critical hit (over the basic 1) */
 	protected float criticalBonusDamage;
 	protected float abilityPower;
 	protected float magicPenetration;
@@ -65,7 +69,7 @@ public abstract class Champion implements Steppable {
 	protected float spellVamp;
 	protected float energy;
 	protected float energyRegen;
-	/** % 1-100 by which skill cooldown is reduced */
+	/** 0-1 rate by which skill cooldown is reduced */
 	protected float cooldownReduction;
 	
 	// Base attributes/gains
@@ -206,7 +210,7 @@ public abstract class Champion implements Steppable {
 			bonusAttackSpeed+=mastery.getAttackSpeed();
 			armor+=mastery.getArmor();
 			magicResist+=mastery.getMagicResist();
-			movementSpeed+=mastery.getMovementSpeed();
+			movementSpeed+=mastery.getMovementSpeed(); // TODO flat vs raw
 			range+=mastery.getRange();
 			armorReduction+=mastery.getArmorReduction();
 			percentageArmorPenetration+=mastery.getPercentageArmorPenetration();
@@ -234,7 +238,7 @@ public abstract class Champion implements Steppable {
 			armor+=level*rune.armorPerLevel;
 			magicResist+=rune.magicResist;
 			magicResist+=level*rune.magicResistPerLevel;
-			movementSpeed+=rune.movementSpeed;
+			movementSpeed+=rune.movementSpeed; // TODO flat vs raw
 			percentageArmorPenetration+=rune.percentageArmorPenetration;
 			flatArmorPenetration+=rune.flatArmorPenetration;
 			criticalChance+=rune.criticalChance;
@@ -271,7 +275,7 @@ public abstract class Champion implements Steppable {
 			armor+=level*item.armorPerLevel;
 			magicResist+=item.magicResist;
 			magicResist+=level*item.magicResistPerLevel;
-			movementSpeed+=item.movementSpeed;
+			movementSpeed+=item.movementSpeed; // TODO flat vs raw
 			percentageArmorPenetration+=item.percentageArmorPenetration;
 			flatArmorPenetration+=item.flatArmorPenetration;
 			criticalChance+=item.criticalChance;
@@ -514,5 +518,24 @@ public abstract class Champion implements Steppable {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	public Float getStat(ChampionStatType statType) {
+		switch (statType) {
+		case abilityPower: 
+			return getAbilityPower();
+		case damage:
+			return getDamage();
+		case armor:
+			return getArmor();
+		case magicResist:
+			return getMagicResist();
+		case health:
+			return getHealth();
+		case mana:
+			return getMana();
+		default:
+			throw new IllegalArgumentException("Not implemented 'getStat()' function value for statType='"+statType+"'");
+		}
 	}
 }

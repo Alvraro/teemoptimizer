@@ -3,7 +3,7 @@ package es.raro.item;
 public abstract class Item {
 	protected String name;
 	
-	public int cost;
+	public int totalCost;
 	
 	// Stats bonus
 	public float health;
@@ -17,15 +17,20 @@ public abstract class Item {
 	public float manaRegenPerLevel;
 	public float damage;
 	public float damagePerLevel;
+	/** Attacks per second */
 	public float attackSpeed;
+	/** 0-1 rate of armor ignored */
 	public float armor;
 	public float armorPerLevel;
+	/** 0-1 rate of magic resistance ignored */
 	public float magicResist;
 	public float magicResistPerLevel;
 	public float movementSpeed;
 	public float percentageArmorPenetration;
 	public float flatArmorPenetration;
+	/** 0-1 probability of getting a critical hit */
 	public float criticalChance;
+	/** 0-1 probability of increased damage on critical hit (over the basic 1) */
 	public float criticalBonusDamage;
 	public float abilityPower;
 	public float abilityPowerPerLevel;
@@ -36,13 +41,15 @@ public abstract class Item {
 	public float energyPerLevel;
 	public float energyRegen;
 	public float energyRegenPerLevel;
+	/** 0-1 rate by which skill cooldown is reduced */
 	public float cooldownReduction;
+	/** 0-1 rate by which skill cooldown is reduced per champion's level */
 	public float cooldownReductionPerLevel;
 
 	public Item(String name){
 		this.name = name;
 		
-		cost = defineCost();
+		totalCost = defineTotalCost();
 		health = defineHealth();
 		healthPerLevel = defineHealthPerLevel();
 		healthPercentage = defineHealthPercentage();
@@ -77,7 +84,7 @@ public abstract class Item {
 		cooldownReductionPerLevel = defineCooldownReductionPerLevel();
 	}
 
-	protected abstract int defineCost();
+	protected abstract int defineTotalCost();
 
 	protected abstract float defineHealth();
 	
