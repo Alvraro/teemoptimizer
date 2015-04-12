@@ -128,7 +128,7 @@ public abstract class Skill {
 				
 		// Schedule event to reactivate skill after the cooldown
 		cooldown *= (1 - champion.getCooldownReduction());
-		model.schedule.scheduleOnce(cooldown, new Steppable() {
+		model.schedule.scheduleOnce(model.schedule.getTime() + cooldown, new Steppable() {
 			@Override
 			public void step(SimState state) {
 				isReady = true;
@@ -159,7 +159,7 @@ public abstract class Skill {
 	public abstract boolean applyOnHitEffects();
 
 	public float getPhysicalDamageDone() {
-		float damageDone = 0;
+		float damageDone = basePhysicalDamageDone;
 		
 		for(Entry<ChampionStatType, Float> d : bonusPhysicalDamageDone.entrySet()){
 			ChampionStatType statType = d.getKey();
@@ -172,7 +172,7 @@ public abstract class Skill {
 	}
 
 	public float getMagicDamageDone() {
-		float damageDone = 0;
+		float damageDone = baseMagicDamageDone;
 		
 		for(Entry<ChampionStatType, Float> d : bonusMagicDamageDone.entrySet()){
 			ChampionStatType statType = d.getKey();

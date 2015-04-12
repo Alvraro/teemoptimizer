@@ -1,6 +1,5 @@
 package es.raro.skill;
 
-import java.util.Collections;
 import java.util.HashMap;
 
 import es.raro.champion.Champion;
@@ -49,6 +48,6 @@ public class Parrrley extends RiotAPISkill {
 
 	@Override
 	protected HashMap<ChampionStatType, Float> defineMagicPhysicalDamageDone() {
-		return (HashMap<ChampionStatType, Float>) Collections.EMPTY_MAP;
+		return new HashMap<ChampionStatType, Float>();
 	}
 }

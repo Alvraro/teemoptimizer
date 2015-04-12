@@ -1,19 +1,12 @@
 package es.raro.champion;
 
-import java.util.ArrayList;
-
 import com.robrua.orianna.api.core.RiotAPI;
-
-import es.raro.item.Item;
-import es.raro.mastery.Mastery;
-import es.raro.rune.Rune;
 
 public class RiotAPIChampion extends Champion {
 	protected com.robrua.orianna.type.core.staticdata.Champion champion;
 
-	public RiotAPIChampion(String name, int level, ArrayList<Mastery> masteries,
-			ArrayList<Rune> runes, ArrayList<Item> items) {
-		super(name, level, masteries, runes, items);
+	public RiotAPIChampion(String name, int level) {
+		super(name, level);
 	}
 
 	@Override

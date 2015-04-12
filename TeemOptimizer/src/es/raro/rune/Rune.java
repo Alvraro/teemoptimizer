@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
+// TODO Implement runes as items to make use of the Riot API 
 public class Rune {
 	private static final String RUNE_PROPERTIES_FILE = "runes.properties";
 
@@ -28,7 +29,6 @@ public class Rune {
 	public float magicResist;
 	public float magicResistPerLevel;
 	public float movementSpeed;
-	public float percentageArmorPenetration;
 	public float flatArmorPenetration;
 	public float criticalChance;
 	public float criticalBonusDamage;
@@ -64,6 +64,18 @@ public class Rune {
 			field.setFloat(this, Float.parseFloat(value));
 		else
 			throw new IllegalArgumentException("Unexpected field type name '"+field.getType().getName()+"'");
+		
+		// Transform [0,100] percentages into [0,1]
+		attackSpeed/=100;
+		cooldownReduction/=100;
+		cooldownReductionPerLevel/=100;
+		criticalChance/=100;
+		criticalBonusDamage/=100;
+		healthPercentage/=100;
+		lifeSteal/=100;
+		movementSpeed/=100;
+		revival/=100;
+		spellVamp/=100;
 	}
 	
 	public Rune(){
@@ -84,7 +96,6 @@ public class Rune {
 		magicResist = 0;
 		magicResistPerLevel = 0;
 		movementSpeed = 0;
-		percentageArmorPenetration = 0;
 		flatArmorPenetration = 0;
 		criticalChance = 0;
 		criticalBonusDamage = 0;
@@ -102,56 +113,5 @@ public class Rune {
 		energyRegenPerLevel = 0;
 		cooldownReduction = 0;
 		cooldownReductionPerLevel = 0;	
-	}
-
-	public Rune(int health, int healthPerLevel, int healthPercentage,
-			float healthRegen, float healthRegenPerLevel, int mana,
-			int manaPerLevel, float manaRegen, float manaRegenPerLevel,
-			float damage, float damagePerLevel, float attackSpeed, float armor,
-			float armorPerLevel, float magicResist, float magicResistPerLevel,
-			float movementSpeed, float percentageArmorPenetration,
-			float flatArmorPenetration, float criticalChance,
-			float criticalBonusDamage, float abilityPower,
-			float abilityPowerPerLevel, float magicPenetration,
-			float lifeSteal, float spellVamp, float revival, float gold,
-			float experience, float energy, float energyPerLevel,
-			float energyRegen, float energyRegenPerLevel,
-			float cooldownReduction, float cooldownReductionPerLevel) {
-		super();
-		this.health = health;
-		this.healthPerLevel = healthPerLevel;
-		this.healthPercentage = healthPercentage;
-		this.healthRegen = healthRegen;
-		this.healthRegenPerLevel = healthRegenPerLevel;
-		this.mana = mana;
-		this.manaPerLevel = manaPerLevel;
-		this.manaRegen = manaRegen;
-		this.manaRegenPerLevel = manaRegenPerLevel;
-		this.damage = damage;
-		this.damagePerLevel = damagePerLevel;
-		this.attackSpeed = attackSpeed;
-		this.armor = armor;
-		this.armorPerLevel = armorPerLevel;
-		this.magicResist = magicResist;
-		this.magicResistPerLevel = magicResistPerLevel;
-		this.movementSpeed = movementSpeed;
-		this.percentageArmorPenetration = percentageArmorPenetration;
-		this.flatArmorPenetration = flatArmorPenetration;
-		this.criticalChance = criticalChance;
-		this.criticalBonusDamage = criticalBonusDamage;
-		this.abilityPower = abilityPower;
-		this.abilityPowerPerLevel = abilityPowerPerLevel;
-		this.magicPenetration = magicPenetration;
-		this.lifeSteal = lifeSteal;
-		this.spellVamp = spellVamp;
-		this.revival = revival;
-		this.goldEarn = gold;
-		this.experienceEarn = experience;
-		this.energy = energy;
-		this.energyPerLevel = energyPerLevel;
-		this.energyRegen = energyRegen;
-		this.energyRegenPerLevel = energyRegenPerLevel;
-		this.cooldownReduction = cooldownReduction;
-		this.cooldownReductionPerLevel = cooldownReductionPerLevel;
 	}
 }

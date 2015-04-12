@@ -16,27 +16,28 @@ public abstract class Champion implements Steppable {
 	private static final float MAX_COOLDOWN_REDUCTION = 0.4f;
 
 	protected ArrayList<Skill> skills;
-	
 	protected ArrayList<Mastery> masteries;
 	protected ArrayList<Rune> runes;
 	protected ArrayList<Item> items;
-	
+
+	protected boolean makeAutoAttacks = true;
+
 	/** Last champion targeted */
 	protected Champion lastTarget;
-	
+
 	/** Whether the champion is enabled or not */
 	protected boolean isEnabled;
 
 	/** Whether the champion can attack */
 	protected boolean attackReady;
-	
+
 	/** Whether the champion can use skills */
 	protected boolean skillsReady;
-		
+
 	protected int level;
-	
+
 	protected String name;
-	
+
 	// Attributes
 	protected float health;
 	protected float healthRegen;
@@ -71,7 +72,7 @@ public abstract class Champion implements Steppable {
 	protected float energyRegen;
 	/** 0-1 rate by which skill cooldown is reduced */
 	protected float cooldownReduction;
-	
+
 	// Base attributes/gains
 	protected float baseHealth;
 	protected float healthGain;
@@ -95,17 +96,18 @@ public abstract class Champion implements Steppable {
 	protected float baseFlatArmorPenetration;
 	protected float baseCriticalChance;
 	protected float baseCriticalBonusDamage;
-	
+
 	protected float remainingHealth;
 	protected float remainingMana;
 
-	public Champion(String name, int level, ArrayList<Mastery> masteries, ArrayList<Rune> runes, ArrayList<Item> items) {
+	public Champion(String name, int level) {
 		this.name = name;
 		this.level = level;
-		this.masteries = masteries;
-		this.runes = runes;
-		this.items = items;
-		
+		this.skills = new ArrayList<Skill>();
+		this.masteries = new ArrayList<Mastery>();
+		this.runes = new ArrayList<Rune>();
+		this.items = new ArrayList<Item>();
+
 		this.baseHealth = defineBaseHealth();
 		this.healthGain = defineHealthGain();
 		this.baseHealthRegen = defineBaseHealthRegen();
@@ -130,7 +132,7 @@ public abstract class Champion implements Steppable {
 		this.baseFlatArmorPenetration = 0;
 		this.baseCriticalChance = 0;
 		this.baseCriticalBonusDamage = 0;
-		
+
 		restart();
 	}
 
@@ -152,14 +154,14 @@ public abstract class Champion implements Steppable {
 	protected abstract float defineMagicResistGain();
 	protected abstract float defineBaseMovementSpeed();
 	protected abstract float defineBaseRange();
-	
+
 	public void restart(){
 		lastTarget = null;
-		
+
 		isEnabled = true;
 		attackReady = true;
 		skillsReady = true;
-		
+
 		health = baseHealth + increaseStat(healthGain, level);
 		healthRegen = baseHealthRegen + increaseStat(healthRegenGain, level);
 		mana = baseMana + increaseStat(manaGain, level);
@@ -176,23 +178,24 @@ public abstract class Champion implements Steppable {
 		criticalChance = baseCriticalChance;
 		criticalBonusDamage = baseCriticalBonusDamage;
 
-		applyMasteriesBonuses();
-		applyRunesBonuses();
-		applyItemsBonuses();
+		applySkillsBonuses(skills);
+		applyMasteriesBonuses(masteries);
+		applyRunesBonuses(runes);
+		applyItemsBonuses(items);
 
 		// Get attackSpeed final value
 		attackSpeed = baseAttackSpeed * (100f + bonusAttackSpeed) / 100f; 
-		
+
 		if(attackSpeed > MAX_ATTACK_SPEED)
 			attackSpeed = MAX_ATTACK_SPEED;
 
 		if(cooldownReduction > MAX_COOLDOWN_REDUCTION)
 			cooldownReduction = MAX_COOLDOWN_REDUCTION;
-		
+
 		remainingHealth = health;
 		remainingMana = mana;
 	}
-	
+
 	private float increaseStat(float gain, int level){
 		if(gain>0 && level>0)
 			return gain * (7f * level * level / 400f + 267f *level / 400 - 137f / 200f);
@@ -200,112 +203,132 @@ public abstract class Champion implements Steppable {
 			return 0;
 	}
 	
-	private void applyMasteriesBonuses() {
-		for(Mastery mastery : masteries){
-			health+=mastery.getHealth();
-			healthRegen+=mastery.getHealthRegen();
-			mana+=mastery.getMana();
-			manaRegen+=mastery.getManaRegen();
-			damage+=mastery.getDamage();
-			bonusAttackSpeed+=mastery.getAttackSpeed();
-			armor+=mastery.getArmor();
-			magicResist+=mastery.getMagicResist();
-			movementSpeed+=mastery.getMovementSpeed(); // TODO flat vs raw
-			range+=mastery.getRange();
-			armorReduction+=mastery.getArmorReduction();
-			percentageArmorPenetration+=mastery.getPercentageArmorPenetration();
-			flatArmorPenetration+=mastery.getFlatArmorPenetration();
-			criticalChance+=mastery.getCriticalChance();
-			criticalBonusDamage+=mastery.getCriticalBonusDamage();			
+	private void applySkillsBonuses(ArrayList<Skill> skills){
+		for(Skill skill : skills){
+			applySkillBonuses(skill);
 		}
 	}
-	
-	private void applyRunesBonuses() {
+		
+	private void applySkillBonuses(Skill skill) {
+		// TODO skillBonuses
+	}
+
+	private void applyMasteriesBonuses(ArrayList<Mastery> masteries) {
+		for(Mastery mastery : masteries){
+			applyMasteryBonuses(mastery);	
+		}
+	}	
+
+	private void applyMasteryBonuses(Mastery mastery) {
+		health+=mastery.getHealth();
+		healthRegen+=mastery.getHealthRegen();
+		mana+=mastery.getMana();
+		manaRegen+=mastery.getManaRegen();
+		damage+=mastery.getDamage();
+		bonusAttackSpeed+=mastery.getAttackSpeed();
+		armor+=mastery.getArmor();
+		magicResist+=mastery.getMagicResist();
+		movementSpeed+=mastery.getMovementSpeed(); // TODO flat vs raw
+		range+=mastery.getRange();
+		armorReduction+=mastery.getArmorReduction();
+		percentageArmorPenetration+=mastery.getPercentageArmorPenetration();
+		flatArmorPenetration+=mastery.getFlatArmorPenetration();
+		criticalChance+=mastery.getCriticalChance();
+		criticalBonusDamage+=mastery.getCriticalBonusDamage();
+	}
+
+	private void applyRunesBonuses(ArrayList<Rune> runes) {
 		for(Rune rune : runes){
-			health+=rune.health;
-			health+=level*rune.healthPerLevel;
-			//healthPercentage+=rune.healthPercentage; TODO health percentage
-			healthRegen+=rune.healthRegen;
-			healthRegen+=level*rune.healthRegenPerLevel;
-			mana+=rune.mana;
-			mana+=level*rune.manaPerLevel;
-			manaRegen+=rune.manaRegen;
-			manaRegen+=level*rune.manaRegenPerLevel;
-			damage+=rune.damage;
-			damage+=level*rune.damagePerLevel;
-			bonusAttackSpeed+=rune.attackSpeed;
-			armor+=rune.armor;
-			armor+=level*rune.armorPerLevel;
-			magicResist+=rune.magicResist;
-			magicResist+=level*rune.magicResistPerLevel;
-			movementSpeed+=rune.movementSpeed; // TODO flat vs raw
-			percentageArmorPenetration+=rune.percentageArmorPenetration;
-			flatArmorPenetration+=rune.flatArmorPenetration;
-			criticalChance+=rune.criticalChance;
-			criticalBonusDamage+=rune.criticalBonusDamage;
-			abilityPower+=rune.abilityPower;
-			abilityPower+=level*rune.abilityPowerPerLevel;
-			magicPenetration+=rune.magicPenetration;
-			lifeSteal+=rune.lifeSteal;
-			spellVamp+=rune.spellVamp;
-			energy+=rune.energy;
-			energy+=level*rune.energyPerLevel;
-			energyRegen+=rune.energyRegen;
-			energyRegen+=level*rune.energyRegenPerLevel;
-			cooldownReduction+=rune.cooldownReduction;
-			cooldownReduction+=level*rune.cooldownReductionPerLevel;
+			applyRuneBonuses(rune);
 		}
 	}
 
-	private void applyItemsBonuses() {
-		for(Item item : items){
-			health+=item.health;
-			health+=level*item.healthPerLevel;
-			//healthPercentage+=item.healthPercentage; TODO health percentage
-			healthRegen+=item.healthRegen;
-			healthRegen+=level*item.healthRegenPerLevel;
-			mana+=item.mana;
-			mana+=level*item.manaPerLevel;
-			manaRegen+=item.manaRegen;
-			manaRegen+=level*item.manaRegenPerLevel;
-			damage+=item.damage;
-			damage+=level*item.damagePerLevel;
-			bonusAttackSpeed+=item.attackSpeed;
-			armor+=item.armor;
-			armor+=level*item.armorPerLevel;
-			magicResist+=item.magicResist;
-			magicResist+=level*item.magicResistPerLevel;
-			movementSpeed+=item.movementSpeed; // TODO flat vs raw
-			percentageArmorPenetration+=item.percentageArmorPenetration;
-			flatArmorPenetration+=item.flatArmorPenetration;
-			criticalChance+=item.criticalChance;
-			criticalBonusDamage+=item.criticalBonusDamage;
-			abilityPower+=item.abilityPower;
-			abilityPower+=level*item.abilityPowerPerLevel;
-			magicPenetration+=item.magicPenetration;
-			lifeSteal+=item.lifeSteal;
-			spellVamp+=item.spellVamp;
-			energy+=item.energy;
-			energy+=level*item.energyPerLevel;
-			energyRegen+=item.energyRegen;
-			energyRegen+=level*item.energyRegenPerLevel;
-			cooldownReduction+=item.cooldownReduction;
-			cooldownReduction+=level*item.cooldownReductionPerLevel;
-		}
-	}	
-	
-	public void step(SimState state) {
-		step((Teemodel)state);
+	private void applyRuneBonuses(Rune rune) {
+		health+=rune.health;
+		health+=level*rune.healthPerLevel;
+		//healthPercentage+=rune.healthPercentage; TODO health percentage
+		healthRegen+=rune.healthRegen;
+		healthRegen+=level*rune.healthRegenPerLevel;
+		mana+=rune.mana;
+		mana+=level*rune.manaPerLevel;
+		manaRegen+=rune.manaRegen;
+		manaRegen+=level*rune.manaRegenPerLevel;
+		damage+=rune.damage;
+		damage+=level*rune.damagePerLevel;
+		bonusAttackSpeed+=rune.attackSpeed;
+		armor+=rune.armor;
+		armor+=level*rune.armorPerLevel;
+		magicResist+=rune.magicResist;
+		magicResist+=level*rune.magicResistPerLevel;
+		movementSpeed+=rune.movementSpeed; // TODO flat vs raw
+		flatArmorPenetration+=rune.flatArmorPenetration;
+		criticalChance+=rune.criticalChance;
+		criticalBonusDamage+=rune.criticalBonusDamage;
+		abilityPower+=rune.abilityPower;
+		abilityPower+=level*rune.abilityPowerPerLevel;
+		magicPenetration+=rune.magicPenetration;
+		lifeSteal+=rune.lifeSteal;
+		spellVamp+=rune.spellVamp;
+		energy+=rune.energy;
+		energy+=level*rune.energyPerLevel;
+		energyRegen+=rune.energyRegen;
+		energyRegen+=level*rune.energyRegenPerLevel;
+		cooldownReduction+=rune.cooldownReduction;
+		cooldownReduction+=level*rune.cooldownReductionPerLevel;
 	}
-	
-	public void step(Teemodel model) {
+
+	private void applyItemsBonuses(ArrayList<Item> items) {
+		for(Item item : items){
+			applyItemBonuses(item);
+		}
+	}
+
+	private void applyItemBonuses(Item item) {
+		health+=item.health;
+		health+=level*item.healthPerLevel;
+		//healthPercentage+=item.healthPercentage; TODO health percentage
+		healthRegen+=item.healthRegen;
+		healthRegen+=level*item.healthRegenPerLevel;
+		mana+=item.mana;
+		mana+=level*item.manaPerLevel;
+		manaRegen+=item.manaRegen;
+		manaRegen+=level*item.manaRegenPerLevel;
+		damage+=item.damage;
+		damage+=level*item.damagePerLevel;
+		bonusAttackSpeed+=item.attackSpeed;
+		armor+=item.armor;
+		armor+=level*item.armorPerLevel;
+		magicResist+=item.magicResist;
+		magicResist+=level*item.magicResistPerLevel;
+		movementSpeed+=item.movementSpeed; // TODO flat vs raw
+		percentageArmorPenetration+=item.percentageArmorPenetration;
+		flatArmorPenetration+=item.flatArmorPenetration;
+		criticalChance+=item.criticalChance;
+		criticalBonusDamage+=item.criticalBonusDamage;
+		abilityPower+=item.abilityPower;
+		abilityPower+=level*item.abilityPowerPerLevel;
+		magicPenetration+=item.magicPenetration;
+		lifeSteal+=item.lifeSteal;
+		spellVamp+=item.spellVamp;
+		energy+=item.energy;
+		energy+=level*item.energyPerLevel;
+		energyRegen+=item.energyRegen;
+		energyRegen+=level*item.energyRegenPerLevel;
+		cooldownReduction+=item.cooldownReduction;
+		cooldownReduction+=level*item.cooldownReductionPerLevel;
+	}	
+
+	@Override
+	public void step(SimState state) {
+		Teemodel model = (Teemodel)state;
+
 		Champion target = chooseTarget(model);
-		
+
 		// Check if we can do anything
 		if(!isEnabled()){
 			return;
 		}
-		
+
 		// Use one random ready skill
 		if(canUseSkills()){
 			Collections.shuffle(skills);
@@ -316,23 +339,23 @@ public abstract class Champion implements Steppable {
 				}
 			}
 		}
-		
-		// Else, attack if possible
+
+		// Else, attack if possible and we want to
 		if(canAttack()){
 			attack(model, target);
 			return;
 		}
 	}
 
-	private boolean canAttack() {
-		return attackReady && isEnabled();
+	protected boolean canAttack() {
+		return makeAutoAttacks && attackReady && isEnabled();
 	}
 
-	private boolean canUseSkills() {
+	protected boolean canUseSkills() {
 		return skillsReady && isEnabled();
 	}
 
-	private boolean isEnabled() {
+	protected boolean isEnabled() {
 		return isEnabled;
 	}
 
@@ -342,10 +365,10 @@ public abstract class Champion implements Steppable {
 
 	protected void useSkill(Teemodel model, Skill s, Champion target) {
 		s.use(model, target);
-		
+
 		// Skills are not ready after using it
 		skillsReady = false;
-		
+
 		// After attack there is a global cooldown for all skills
 		startGlobalCooldown(model);
 	}
@@ -354,31 +377,32 @@ public abstract class Champion implements Steppable {
 		// Do damage
 		float damageDone = Teemodel.calculatePhysicalDamage(this, target, null);
 		target.receiveDamage(damageDone);
-		
+
 		// Attack is not ready after using it
 		attackReady = false;
-	
+
 		// Schedule event to reactivate skill after the cooldown
-		model.schedule.scheduleOnce(1.0 / getAttackSpeed(), new Steppable() {
+		model.schedule.scheduleOnce(model.schedule.getTime() + 1.0 / getAttackSpeed(), new Steppable() {
 			@Override
 			public void step(SimState state) {
 				attackReady = true;
 			}
 		});
-		
+
 		// After attack there is a global cooldown
 		startGlobalCooldown(model);
 	}
 
 	public void receiveDamage(float damageDone) {
+		System.out.println(this+" received damage="+damageDone);
 		remainingHealth -= damageDone;
 	}
 
 	private void startGlobalCooldown(Teemodel model) {
-		model.schedule.scheduleOnce(Teemodel.GLOBAL_COOLDOWN, new Steppable() {
+		model.schedule.scheduleOnce(model.schedule.getTime() + Teemodel.GLOBAL_COOLDOWN, new Steppable() {
 			@Override
 			public void step(SimState state) {
-				isEnabled = true;
+				skillsReady = true;
 			}
 		});
 	}
@@ -514,7 +538,7 @@ public abstract class Champion implements Steppable {
 	public String getName(){
 		return name;
 	}
-	
+
 	@Override
 	public String toString() {
 		return name;
@@ -537,5 +561,29 @@ public abstract class Champion implements Steppable {
 		default:
 			throw new IllegalArgumentException("Not implemented 'getStat()' function value for statType='"+statType+"'");
 		}
+	}
+
+	public void makeAutoAttacks(boolean makeAutoAttacks) {
+		this.makeAutoAttacks = makeAutoAttacks; 
+	}
+
+	public void addSkill(Skill skill) {
+		skills.add(skill);
+		applySkillBonuses(skill);
+	}
+
+	public void addMastery(Mastery mastery) {
+		masteries.add(mastery);
+		applyMasteryBonuses(mastery);
+	}
+	
+	public void addRune(Rune rune) {
+		runes.add(rune);
+		applyRuneBonuses(rune);
+	}
+
+	public void addItem(Item item) {
+		items.add(item);
+		applyItemBonuses(item);
 	}
 }

@@ -1,11 +1,8 @@
 package es.raro.skill;
 
-import java.util.HashMap;
-
 import com.robrua.orianna.type.core.staticdata.ChampionSpell;
 
 import es.raro.champion.Champion;
-import es.raro.champion.ChampionStatType;
 import es.raro.model.UnmatchingDescription;
 import es.raro.riot.api.RaroRiotAPI;
 
