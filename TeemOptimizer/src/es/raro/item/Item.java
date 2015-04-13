@@ -1,5 +1,10 @@
 package es.raro.item;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import es.raro.skill.Skill;
+
 public abstract class Item {
 	protected String name;
 	
@@ -46,6 +51,9 @@ public abstract class Item {
 	/** 0-1 rate by which skill cooldown is reduced per champion's level */
 	public float cooldownReductionPerLevel;
 
+	public HashSet<Item> uniqueEffects;
+	public HashSet<Skill> uniqueSkills;
+	
 	public Item(String name){
 		this.name = name;
 		
@@ -82,7 +90,14 @@ public abstract class Item {
 		energyRegenPerLevel = defineEnergyRegenPerLevel();
 		cooldownReduction = defineCooldownReduction();
 		cooldownReductionPerLevel = defineCooldownReductionPerLevel();
+		
+		uniqueEffects = defineUniqueEffects();
+		uniqueSkills = defineUniqueSkills();
 	}
+
+	protected abstract HashSet<Item> defineUniqueEffects();
+
+	protected abstract HashSet<Skill> defineUniqueSkills();
 
 	protected abstract int defineTotalCost();
 
@@ -149,4 +164,18 @@ public abstract class Item {
 	protected abstract float defineCooldownReduction();
 	
 	protected abstract float defineCooldownReductionPerLevel();
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof Item){
+			return name.equals(((Item) obj).name);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+	
 }

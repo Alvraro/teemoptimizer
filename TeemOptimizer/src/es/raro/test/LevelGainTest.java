@@ -1,4 +1,4 @@
-package es.raro;
+package es.raro.test;
 
 import static org.junit.Assert.*;
 

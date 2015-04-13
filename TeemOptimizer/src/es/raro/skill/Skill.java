@@ -183,4 +183,18 @@ public abstract class Skill {
 		
 		return damageDone;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof Skill){
+			return name.equals(((Skill) obj).name);
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+	
 }

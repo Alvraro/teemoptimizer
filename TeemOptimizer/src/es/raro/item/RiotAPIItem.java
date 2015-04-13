@@ -1,6 +1,9 @@
 package es.raro.item;
 
+import java.util.HashSet;
+
 import es.raro.riot.api.RaroRiotAPI;
+import es.raro.skill.Skill;
 
 public class RiotAPIItem extends Item {
 	protected com.robrua.orianna.type.core.staticdata.Item item;
@@ -271,5 +274,15 @@ public class RiotAPIItem extends Item {
 			item = RaroRiotAPI.getItemByName(name);
 
 		return item.getGold().getTotal();
+	}
+
+	@Override
+	protected HashSet<Item> defineUniqueEffects() {
+		return new HashSet<Item>();
+	}
+
+	@Override
+	protected HashSet<Skill> defineUniqueSkills() {
+		return new HashSet<Skill>();
 	}
 }

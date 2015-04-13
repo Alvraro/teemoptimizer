@@ -1,7 +1,9 @@
 package es.raro.champion;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -100,6 +102,9 @@ public abstract class Champion implements Steppable {
 	protected float remainingHealth;
 	protected float remainingMana;
 
+	protected HashSet<Skill> uniqueSkills;
+	protected HashSet<Item> uniqueEffects;
+	
 	public Champion(String name, int level) {
 		this.name = name;
 		this.level = level;
@@ -107,6 +112,8 @@ public abstract class Champion implements Steppable {
 		this.masteries = new ArrayList<Mastery>();
 		this.runes = new ArrayList<Rune>();
 		this.items = new ArrayList<Item>();
+		this.uniqueSkills = new HashSet<Skill>();
+		this.uniqueEffects = new HashSet<Item>();
 
 		this.baseHealth = defineBaseHealth();
 		this.healthGain = defineHealthGain();
@@ -182,6 +189,9 @@ public abstract class Champion implements Steppable {
 		applyMasteriesBonuses(masteries);
 		applyRunesBonuses(runes);
 		applyItemsBonuses(items);
+		
+		applySkillsBonuses(uniqueSkills);
+		applyItemsBonuses(uniqueEffects);
 
 		// Get attackSpeed final value
 		attackSpeed = baseAttackSpeed * (100f + bonusAttackSpeed) / 100f; 
@@ -203,17 +213,48 @@ public abstract class Champion implements Steppable {
 			return 0;
 	}
 	
-	private void applySkillsBonuses(ArrayList<Skill> skills){
+	private void applySkillsBonuses(Collection<Skill> skills){
 		for(Skill skill : skills){
 			applySkillBonuses(skill);
 		}
 	}
 		
 	private void applySkillBonuses(Skill skill) {
-		// TODO skillBonuses
+		health+=skill.health;
+		health+=level*skill.healthPerLevel;
+		//healthPercentage+=item.healthPercentage; TODO health percentage
+		healthRegen+=skill.healthRegen;
+		healthRegen+=level*skill.healthRegenPerLevel;
+		mana+=skill.mana;
+		mana+=level*skill.manaPerLevel;
+		manaRegen+=skill.manaRegen;
+		manaRegen+=level*skill.manaRegenPerLevel;
+		damage+=skill.damage;
+		damage+=level*skill.damagePerLevel;
+		bonusAttackSpeed+=skill.attackSpeed;
+		armor+=skill.armor;
+		armor+=level*skill.armorPerLevel;
+		magicResist+=skill.magicResist;
+		magicResist+=level*skill.magicResistPerLevel;
+		movementSpeed+=skill.movementSpeed; // TODO flat vs raw
+		percentageArmorPenetration+=skill.percentageArmorPenetration;
+		flatArmorPenetration+=skill.flatArmorPenetration;
+		criticalChance+=skill.criticalChance;
+		criticalBonusDamage+=skill.criticalBonusDamage;
+		abilityPower+=skill.abilityPower;
+		abilityPower+=level*skill.abilityPowerPerLevel;
+		magicPenetration+=skill.magicPenetration;
+		lifeSteal+=skill.lifeSteal;
+		spellVamp+=skill.spellVamp;
+		energy+=skill.energy;
+		energy+=level*skill.energyPerLevel;
+		energyRegen+=skill.energyRegen;
+		energyRegen+=level*skill.energyRegenPerLevel;
+		cooldownReduction+=skill.cooldownReduction;
+		cooldownReduction+=level*skill.cooldownReductionPerLevel;
 	}
 
-	private void applyMasteriesBonuses(ArrayList<Mastery> masteries) {
+	private void applyMasteriesBonuses(Collection<Mastery> masteries) {
 		for(Mastery mastery : masteries){
 			applyMasteryBonuses(mastery);	
 		}
@@ -277,7 +318,7 @@ public abstract class Champion implements Steppable {
 		cooldownReduction+=level*rune.cooldownReductionPerLevel;
 	}
 
-	private void applyItemsBonuses(ArrayList<Item> items) {
+	private void applyItemsBonuses(Collection<Item> items) {
 		for(Item item : items){
 			applyItemBonuses(item);
 		}
@@ -585,5 +626,19 @@ public abstract class Champion implements Steppable {
 	public void addItem(Item item) {
 		items.add(item);
 		applyItemBonuses(item);
+		
+		for(Item effect : item.uniqueEffects){
+			if(!uniqueEffects.contains(effect)){
+				uniqueEffects.add(effect);
+				applyItemBonuses(effect);
+			}
+		}
+		
+		for(Skill skill : item.uniqueSkills){
+			if(!uniqueSkills.contains(skill)){
+				uniqueSkills.add(skill);
+				applySkillBonuses(skill);
+			}
+		}
 	}
 }

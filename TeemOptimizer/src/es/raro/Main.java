@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import es.raro.champion.Champion;
@@ -32,13 +33,14 @@ public class Main {
 		// Defender config
 		Champion defender = configureChampion("defender", properties);
 		
+		// Seconds of simulation
 		int duration = Integer.parseInt(properties.getProperty("simulation.duration"));
 		
 		Teemodel model = new Teemodel(seed, attacker, defender, duration);
 		model.start();
 		
 		while(model.schedule.step(model)){
-			//System.out.println(model.schedule.getTime());
+			//Logger.getGlobal().info.(model.schedule.getTime());
 		}
 	}
 
