@@ -185,4 +185,9 @@ public class EmptyItem extends Item {
 		return 0;
 	}
 
+	@Override
+	public boolean applyOnHitEffects() {
+		return false;
+	}
+
 }

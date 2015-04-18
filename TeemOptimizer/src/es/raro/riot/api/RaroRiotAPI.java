@@ -18,7 +18,7 @@ public class RaroRiotAPI extends RiotAPI {
 
 		// If not found, use RiotAPI
 		for(Item itemAux : RiotAPI.getItems()){
-			if(normalizeName(itemAux.getName()).equalsIgnoreCase(name)){
+			if(normalizeRiotName(itemAux.getName()).equalsIgnoreCase(name)){
 				items.put(name, itemAux);
 				return itemAux;
 			}
@@ -37,7 +37,7 @@ public class RaroRiotAPI extends RiotAPI {
 
 		// If not found, use RiotAPI
 		for(ChampionSpell spellAux : getChampionByName(championName).getSpells()){
-			if(normalizeName(spellAux.getName()).equalsIgnoreCase(name)){
+			if(normalizeRiotName(spellAux.getName()).equalsIgnoreCase(name)){
 				championSpells.put(key, spellAux);
 				return spellAux;
 			}
@@ -46,7 +46,10 @@ public class RaroRiotAPI extends RiotAPI {
 		throw new IllegalArgumentException("Skill '"+name+"' not found for champion '"+championName+"'");
 	}
 
-	private static String normalizeName(String name) {
+	public static String normalizeRiotName(String name) {
 		return name.replaceAll("\\W", "");
 	}
+
+	
+	
 }

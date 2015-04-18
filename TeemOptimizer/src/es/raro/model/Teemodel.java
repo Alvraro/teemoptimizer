@@ -51,6 +51,9 @@ public class Teemodel extends SimState {
 
 	@Override
 	public void start() {
+		attacker.restart();
+		defender.restart();
+		
 		super.start();
 		schedule.scheduleRepeating(0, attacker, REFRESH_TIME);
 		schedule.scheduleRepeating(0, defender, REFRESH_TIME);

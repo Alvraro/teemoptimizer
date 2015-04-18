@@ -2,8 +2,6 @@ package es.raro.item;
 
 import java.util.HashSet;
 
-import es.raro.skill.Skill;
-
 public class StatikkShiv extends RiotAPIItem {
 
 	public StatikkShiv() {

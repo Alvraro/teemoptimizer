@@ -2,8 +2,6 @@ package es.raro.item;
 
 import java.util.HashSet;
 
-import es.raro.skill.Skill;
-
 public class WickedHatchet extends RiotAPIItem {
 
 	public WickedHatchet() {

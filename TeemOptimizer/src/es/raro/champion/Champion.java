@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.logging.Logger;
 
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -104,7 +105,7 @@ public abstract class Champion implements Steppable {
 
 	protected HashSet<Skill> uniqueSkills;
 	protected HashSet<Item> uniqueEffects;
-	
+
 	public Champion(String name, int level) {
 		this.name = name;
 		this.level = level;
@@ -169,6 +170,14 @@ public abstract class Champion implements Steppable {
 		attackReady = true;
 		skillsReady = true;
 
+		abilityPower = 0;
+		magicPenetration = 0;
+		lifeSteal = 0;
+		spellVamp = 0;
+		energy = 0; // TODO energy
+		energyRegen = 0; // TODO energyRegen
+		cooldownReduction = 0;
+		
 		health = baseHealth + increaseStat(healthGain, level);
 		healthRegen = baseHealthRegen + increaseStat(healthRegenGain, level);
 		mana = baseMana + increaseStat(manaGain, level);
@@ -184,12 +193,12 @@ public abstract class Champion implements Steppable {
 		flatArmorPenetration = baseFlatArmorPenetration;
 		criticalChance = baseCriticalChance;
 		criticalBonusDamage = baseCriticalBonusDamage;
-
+		
 		applySkillsBonuses(skills);
 		applyMasteriesBonuses(masteries);
 		applyRunesBonuses(runes);
 		applyItemsBonuses(items);
-		
+
 		applySkillsBonuses(uniqueSkills);
 		applyItemsBonuses(uniqueEffects);
 
@@ -204,6 +213,14 @@ public abstract class Champion implements Steppable {
 
 		remainingHealth = health;
 		remainingMana = mana;
+		
+		for(Skill skill : skills){
+			skill.restart();
+		}
+		for(Skill skill : uniqueSkills){
+			skill.restart();
+		}
+
 	}
 
 	private float increaseStat(float gain, int level){
@@ -212,13 +229,13 @@ public abstract class Champion implements Steppable {
 		else
 			return 0;
 	}
-	
+
 	private void applySkillsBonuses(Collection<Skill> skills){
 		for(Skill skill : skills){
 			applySkillBonuses(skill);
 		}
 	}
-		
+
 	private void applySkillBonuses(Skill skill) {
 		health+=skill.health;
 		health+=level*skill.healthPerLevel;
@@ -435,7 +452,7 @@ public abstract class Champion implements Steppable {
 	}
 
 	public void receiveDamage(float damageDone) {
-		System.out.println(this+" received damage="+damageDone);
+		Logger.getGlobal().info(this+" received damage="+damageDone);
 		remainingHealth -= damageDone;
 	}
 
@@ -617,7 +634,7 @@ public abstract class Champion implements Steppable {
 		masteries.add(mastery);
 		applyMasteryBonuses(mastery);
 	}
-	
+
 	public void addRune(Rune rune) {
 		runes.add(rune);
 		applyRuneBonuses(rune);
@@ -626,14 +643,14 @@ public abstract class Champion implements Steppable {
 	public void addItem(Item item) {
 		items.add(item);
 		applyItemBonuses(item);
-		
+
 		for(Item effect : item.uniqueEffects){
 			if(!uniqueEffects.contains(effect)){
 				uniqueEffects.add(effect);
 				applyItemBonuses(effect);
 			}
 		}
-		
+
 		for(Skill skill : item.uniqueSkills){
 			if(!uniqueSkills.contains(skill)){
 				uniqueSkills.add(skill);
@@ -641,4 +658,9 @@ public abstract class Champion implements Steppable {
 			}
 		}
 	}
+
+	public void setItems(ArrayList<Item> items) {
+		this.items = items;
+	}
+
 }

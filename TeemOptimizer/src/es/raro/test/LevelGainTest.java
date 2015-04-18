@@ -1,11 +1,9 @@
 package es.raro.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.Properties;
 
 import org.junit.Test;
 
@@ -16,10 +14,10 @@ public class LevelGainTest {
 
 	@Test
 	public void testChampion() throws FileNotFoundException, IOException {
-		Properties properties = new Properties();
-		properties.load(new FileReader("config.properties"));
+		String key = "053867d6-8f46-4309-b7ad-e5656c3a2364";
+		String region = "EUW";
 		
-		Teemodel.initializeRiotAPI(properties.getProperty("key"), properties.getProperty("region"));
+		Teemodel.initializeRiotAPI(key, region);
 		
 		RiotAPIChampion alistar1 = new RiotAPIChampion("Alistar", 1);
 		assertEquals(613, alistar1.getHealth(), 1);

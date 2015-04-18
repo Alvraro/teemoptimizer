@@ -1,6 +1,5 @@
 package es.raro.item;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import es.raro.skill.Skill;
@@ -99,6 +98,8 @@ public abstract class Item {
 
 	protected abstract HashSet<Skill> defineUniqueSkills();
 
+	public abstract boolean applyOnHitEffects();
+	
 	protected abstract int defineTotalCost();
 
 	protected abstract float defineHealth();
@@ -176,6 +177,11 @@ public abstract class Item {
 	@Override
 	public int hashCode() {
 		return name.hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 	
 }

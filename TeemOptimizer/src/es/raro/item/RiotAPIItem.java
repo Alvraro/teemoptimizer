@@ -285,4 +285,11 @@ public class RiotAPIItem extends Item {
 	protected HashSet<Skill> defineUniqueSkills() {
 		return new HashSet<Skill>();
 	}
+
+	@Override
+	public boolean applyOnHitEffects() {
+		// TODO do we know here if applies any on hit effect?  
+		return false;
+	}
+	
 }

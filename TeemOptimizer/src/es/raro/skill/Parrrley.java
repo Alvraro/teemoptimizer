@@ -4,12 +4,11 @@ import java.util.HashMap;
 
 import es.raro.champion.Champion;
 import es.raro.champion.ChampionStatType;
-import es.raro.model.UnmatchingDescription;
 import es.raro.riot.api.RaroRiotAPI;
 
 public class Parrrley extends RiotAPISkill {
 
-	public Parrrley(Champion champion, Integer level) throws UnmatchingDescription {
+	public Parrrley(Champion champion, Integer level) {
 		super("Parrrley", champion, level);
 	}
 

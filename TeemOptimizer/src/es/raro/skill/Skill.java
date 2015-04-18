@@ -8,7 +8,6 @@ import sim.engine.Steppable;
 import es.raro.champion.Champion;
 import es.raro.champion.ChampionStatType;
 import es.raro.model.Teemodel;
-import es.raro.model.UnmatchingDescription;
 
 
 public abstract class Skill {
@@ -75,7 +74,7 @@ public abstract class Skill {
 	public float baseMagicDamageDone;
 	public HashMap<ChampionStatType,Float> bonusMagicDamageDone;
 	
-	public Skill(String name, Champion champion, int level) throws UnmatchingDescription {
+	public Skill(String name, Champion champion, int level) {
 		this.name = name;
 		this.champion = champion;
 		this.level = level;
@@ -84,12 +83,16 @@ public abstract class Skill {
 		range = defineRange(level);
 		cooldown = defineCooldown(level);
 		
-		isReady = true;
-		
 		basePhysicalDamageDone = defineBasePhysicalDamageDone(); 
 		bonusPhysicalDamageDone = defineBonusPhysicalDamageDone();
 		baseMagicDamageDone = defineBaseMagicDamageDone();
 		bonusMagicDamageDone = defineMagicPhysicalDamageDone();
+		
+		restart();
+	}
+
+	public void restart() {
+		isReady = true;
 	}
 
 	protected abstract float defineBasePhysicalDamageDone();
@@ -196,5 +199,10 @@ public abstract class Skill {
 	public int hashCode() {
 		return name.hashCode();
 	}
-	
+
+	@Override
+	public String toString() {
+		return name;
+	}
+
 }

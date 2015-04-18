@@ -3,15 +3,13 @@ package es.raro.skill;
 import com.robrua.orianna.type.core.staticdata.ChampionSpell;
 
 import es.raro.champion.Champion;
-import es.raro.model.UnmatchingDescription;
 import es.raro.riot.api.RaroRiotAPI;
 
 public abstract class RiotAPISkill extends Skill {
 
 	protected ChampionSpell spell;
 
-	public RiotAPISkill(String name, Champion champion, int level)
-			throws UnmatchingDescription {
+	public RiotAPISkill(String name, Champion champion, int level) {
 		super(name, champion, level);
 	}
 
