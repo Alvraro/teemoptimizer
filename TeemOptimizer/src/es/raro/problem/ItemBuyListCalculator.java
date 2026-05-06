@@ -68,9 +68,13 @@ public class ItemBuyListCalculator extends Problem {
 		if(gold<0)
 			return new DamageItemBuyList(new ArrayList<Item>(), 0);
 		
-		// If there are no more eligible items, we're done
-		if(eligibleItems.isEmpty())
-			return selectedItems;
+		// If there are no more eligible items, we can calculate straight-forward how much damage we can make 
+		if(eligibleItems.isEmpty()){
+			float damage = calculateDamage(selectedItems.items);
+			DamageItemBuyList ret = selectedItems.clone();
+			ret.damage = damage;
+			return ret;
+		}
 		
 		// Current item being analyzed
 		Item currentItem = eligibleItems.get(eligibleItems.size()-1);
@@ -84,10 +88,7 @@ public class ItemBuyListCalculator extends Problem {
 			DamageItemBuyList selectedItemsWith = selectedItems.clone();
 			selectedItemsWith.items.add(currentItem);
 			withBestList = getItemBuyList(eligibleItems, gold - currentItem.totalCost, selectedItemsWith);
-			
-			// Calculate the damage with best sublist found and the current item
-			withBestList.items.add(currentItem);
-			withBestDamage = calculateDamage(withBestList.items);
+			withBestDamage = withBestList.damage;
 		}
 
 		// 2) Don't include the item:

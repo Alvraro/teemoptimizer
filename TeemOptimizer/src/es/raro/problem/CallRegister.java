@@ -34,7 +34,7 @@ public class CallRegister {
 		String key = "";
 		for(Object o : objects){
 			if(o instanceof List){
-				Collections.sort((List) o);
+				//Collections.sort((List) o);
 			}
 			key+=o.toString()+DELIMITER;
 		}
